@@ -265,6 +265,7 @@ namespace E_mob_shoppy.Areas.Customer.Controllers
 			double totalAmountStripe = shoppingCartVM.OrderHeader.OrderTotal;
 			var domain = Request.Scheme + "://"+ Request.Host.Value +"/";
 			
+
 			var options = new SessionCreateOptions
 			{
 
