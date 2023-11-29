@@ -1,0 +1,41 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<ul class="nav">
+@if (SignInManager.IsSignedIn(User))
+{
+        <li class="dropdown nav-item">
+            <a class="dropdown-toggle" data-bs-toggle="dropdown" id="manage" asp-area="Identity" asp-page="/Account/Manage/Index" aria-expanded="false"><span class="text-center">@UserManager.GetUserName(User)!</span><img class="img-xs rounded-circle" src=@Url.Content("/assets/imgs/people/avatar2.jpg") alt="User"></a>
+            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
+                
+                <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index"><i class="material-icons md-settings"></i>Account Settings</a>
+                <a class="dropdown-item" asp-area="Customer" asp-controller="Cart"  asp-action="Index"><i class="material-icons md-account_balance_wallet"></i>Cart</a>
+                <a class="dropdown-item" asp-area="Customer" asp-controller="Cart" asp-action="ShowCoupon"><i class="material-icons md-receipt"></i>Coupons</a>
+                <a class="dropdown-item" asp-area="Admin" asp-controller="Coupon" asp-action="wallet"><i class="material-icons md-account_balance_wallet"></i>Wallet</a>
+                <a class="dropdown-item" href="#"><i class="material-icons md-help_outline"></i>Help center</a>
+                <div class="dropdown-divider"></div>
+
+                <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button id="logout" type="submit" class="dropdown-item text-danger"><i class="material-icons md-exit_to_app"></i>Logout</button>
+                </form>
+
+
+
+            </div>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="nav-link text-primary" id="register" asp-area="Identity" asp-page="/Account/Register">Register</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-primary" id="login" asp-area="Identity" asp-page="/Account/Login">Login</a>
+    </li>
+}
+</ul>
+
+
+

@@ -1,0 +1,58 @@
+﻿@model ApplicationUser
+
+
+
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">User Wallet </h2>
+            <p>All Details of Your Wallet Is Here. </p>
+        </div>
+
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <form>
+                        <div class="mb-4">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-control" asp-for="Name" disabled />
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Email</label>
+                            <input type="text" class="form-control" asp-for="Email" disabled />
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Phone Number</label>
+                            <input type="text" class="form-control" asp-for="PhoneNumber" disabled/>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-9 mt-25">
+                    <div class="table-responsive">
+                        @if (Model.wallet != null)
+                        {
+                            <article class="box">
+                                <p class="mb-0 text-muted"></p>
+                                <h5 class="text-success"></h5>
+                                <p class="mb-0 text-muted">Wallet Amount:</p>
+                                <h5 class="text-success mb-0">$@Model.wallet</h5>
+                            </article>
+                        }
+                        @if (Model.wallet == null)
+                        {
+                            <article class="box">
+                                <p class="mb-0 text-muted"></p>
+                                <h5 class="text-success"></h5>
+                                <p class="mb-0 text-muted">Wallet Amount:</p>
+                                <h5 class="text-danger mb-0">Nothing in the Wallet</h5>
+                            </article>
+                        }
+
+                    </div>
+                </div> <!-- .col// -->
+            </div> <!-- .row // -->
+        </div> <!-- card body .// -->
+    </div> <!-- card .// -->
+</section> <!-- content-main end// -->

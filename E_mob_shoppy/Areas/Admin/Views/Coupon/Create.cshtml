@@ -1,0 +1,48 @@
+﻿@model Coupon
+
+<section class="content-main">
+    <div class="card shadow border-0 mt-4">
+        <div class="card-header bg-secondary bg-gradient ml-0 py-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h2 class="text-white py-2">Create Product</h2>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-4">
+
+            <form method="post" enctype="multipart/form-data">
+                <div class="p-3 mt-4">
+                   
+                    <div class="mb-3 row">
+                        <label asp-for="Code">Coupon Name</label>
+                        <input asp-for="Code" class="form-control" />
+                        <span asp-validation-for="Code" class="text-primary"></span>
+                        <span class="text-danger">@TempData["existingCouponNamesError"]</span>
+                    </div>
+                    <div class="mb-3 row pb-10">
+                        <label asp-for="DiscountAmount">Discount Amount</label>
+                        <input asp-for="DiscountAmount" class="form-control" />
+                        <span class="text-danger">@TempData["discountError"]</span>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 col-md-3">
+                            <button type="submit" class="btn btn-primary form-control">Create</button>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <a asp-controller="Coupon" asp-action="Index" class="btn btn-secondary form-control">Back To List</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</section>
+
+
+@section Scripts{
+    @{
+        <partial name = "_ValidationScriptsPartial" />
+    }
+}

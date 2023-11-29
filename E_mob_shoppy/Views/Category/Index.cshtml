@@ -1,0 +1,65 @@
+﻿@model List<Category>
+
+
+
+<div class="card shadow border-0 mt-4">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2 "> Category List </h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-3">
+        <div class="row pt-2">
+            <partial name="_partialView">
+              
+                <div class="col-12 pb-3 text-end">
+                    <a asp-action="Create" asp-controller="Category" class="btn  btn-primary"><i class="bi bi-plus-circle"></i> Add Category</a>
+                </div>
+        </div>
+
+        <table class="table table-bordered table-striped pt-2">
+            <thead class="thead-dark">
+                <tr>
+                    <th>
+                        id
+                    </th>
+                    <th>
+                        Category Name
+                    </th>
+                    <th>
+                        Descrription
+                    </th>
+                    <th>
+                        Manupulate
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var obj in Model)
+                {
+                    <tr>
+                        <td>@obj.Category_Id</td>
+                        <td>@obj.Name</td>
+                        <td>@obj.Description</td>
+                        <td>
+                            <div class="w-75 btn-group" role="group">
+                                <a class="btn btn-primary mx-2" asp-action="edit" asp-route-id="@obj.Category_Id" asp-controller="Category">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </a>
+                                <a class="btn btn-danger mx-2" asp-action="Delete" asp-route-id="@obj.Category_Id" asp-controller="Category">
+                                    <i class="bi bi-x-octagon"></i> Deletee
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
