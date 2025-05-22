@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using E_mob_shoppy.Utility;
 using Stripe;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 
 using E_mob_shoppy.DataAccess.DbInitializer;
 
@@ -16,6 +19,10 @@ namespace E_mob_shoppy
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // Add Application Insights
+            builder.Services.AddApplicationInsightsTelemetry();
+
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -42,7 +49,7 @@ namespace E_mob_shoppy
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromSeconds(300); // Set session timeout to 5 minutes (300 seconds)
+                options.IdleTimeout = TimeSpan.FromMinutes(30); // Increased from 5 minutes to 30 minutes
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
@@ -77,14 +84,39 @@ namespace E_mob_shoppy
                 name: "default",
                 pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
 
+            // Warm up the application to prevent cold start issues
+            var logger = app.Services.GetRequiredService<ILogger<Program>>();
+            Task.Run(async () =>
+            {
+                try
+                {
+                    logger.LogInformation("Starting application warmup process");
+                    await Startup.WarmupApplication(app.Services, logger);
+                    logger.LogInformation("Application warmup completed successfully");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Error during application warmup");
+                }
+            });
+
             app.Run();
 
             void SeedDatabase()
             {
-                using (var scope = app.Services.CreateScope())
+                try
                 {
-                    var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
-                    dbInitializer.Initialize();
+                    using (var scope = app.Services.CreateScope())
+                    {
+                        var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+                        dbInitializer.Initialize();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception
+                    Console.WriteLine($"Error during database seeding: {ex.Message}");
+                    // In a production environment, you might want to use a more robust logging solution
                 }
             }
         }

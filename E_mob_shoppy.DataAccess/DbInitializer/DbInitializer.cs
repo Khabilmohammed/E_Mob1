@@ -22,8 +22,8 @@ namespace E_mob_shoppy.DataAccess.DbInitializer
             ApplicationDbContext db)
         {
             _db = db;
-            _userManager = userManager; 
-            _roleManager = roleManager; 
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         public void Initialize()
@@ -34,9 +34,12 @@ namespace E_mob_shoppy.DataAccess.DbInitializer
                 {
                     _db.Database.Migrate();
                 }
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
-
+                // Log the exception instead of silently ignoring it
+                Console.WriteLine($"Error during database migration: {ex.Message}");
+                // Consider adding more robust logging here
             }
 
 
@@ -62,7 +65,7 @@ namespace E_mob_shoppy.DataAccess.DbInitializer
             }
 
             return;
-           
-        }   
+
+        }
     }
 }
