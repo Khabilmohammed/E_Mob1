@@ -34,12 +34,9 @@ namespace E_mob_shoppy.DataAccess.DbInitializer
                 {
                     _db.Database.Migrate();
                 }
-            }
-            catch (Exception ex)
+            }catch (Exception ex)
             {
-                // Log the exception instead of silently ignoring it
-                Console.WriteLine($"Error during database migration: {ex.Message}");
-                // Consider adding more robust logging here
+
             }
 
 
