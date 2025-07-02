@@ -69,7 +69,8 @@ namespace E_mob_shoppy.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            Coupon? couponFromDb =  _UnitOfWork.Coupon.Get(u => u.CouponId == id);
+            Coupon? couponFromDb = _UnitOfWork.Coupon
+    .Get(u => u.CouponId == id, tracked: false);
 
             if (couponFromDb == null)
                 return NotFound();
@@ -88,28 +89,57 @@ namespace E_mob_shoppy.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public  ActionResult Update(Coupon? obj)
+        public IActionResult Update(Coupon obj)
         {
-            var existingCouponNames = _UnitOfWork.Coupon.GetAll().Where(c => c.CouponId != obj.CouponId).Select(c => c.Code).ToList();
-            if (existingCouponNames.Contains(obj.Code))
+            if (obj == null)
+                return NotFound();
+
+            var duplicate = _UnitOfWork.Coupon
+                .GetAll()
+                .Any(c => c.Code == obj.Code && c.CouponId != obj.CouponId);
+
+            if (duplicate)
             {
-                TempData["existingCouponNamesError"] = "Already Exits This Coupon";
-                return View();
+                TempData["existingCouponNamesError"] = "Already Exists This Coupon";
+                return View(obj);
             }
+
             if (obj.DiscountAmount == null)
             {
-                TempData["discountError"] = "please enter the discount amount";
-                return View();
+                TempData["discountError"] = "Please enter the discount amount";
+                return View(obj);
             }
+
             if (ModelState.IsValid)
             {
-                _UnitOfWork.Coupon.Upadte(obj);
-                _UnitOfWork.Save();
-                TempData["success"] = "Coupon Updated successfully";
-                return RedirectToAction("Index");
+                try
+                {
+                    // Fetch tracked entity first
+                    var existingCoupon = _UnitOfWork.Coupon.Get(c => c.CouponId == obj.CouponId);
+
+                    if (existingCoupon == null)
+                        return NotFound();
+
+                    // Update only fields (EF is tracking this instance)
+                    existingCoupon.Code = obj.Code;
+                    existingCoupon.DiscountAmount = obj.DiscountAmount;
+                    
+
+                    _UnitOfWork.Save();
+                    TempData["success"] = "Coupon updated successfully";
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    // Optional: log or debug ex.Message
+                    TempData["error"] = "An error occurred while updating the coupon.";
+                }
             }
-            return View();
+
+            return View(obj);
         }
+
+
 
 
 

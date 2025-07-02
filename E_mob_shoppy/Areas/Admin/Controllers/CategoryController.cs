@@ -31,27 +31,33 @@ namespace E_mob_shoppy.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Create(Category obj)
         {
-            if (obj.Name == obj.DisplayOrder.ToString())
+            obj.Name = obj.Name.ToLower();
+
+            if (obj.Name == obj.DisplayOrder.ToString().ToLower())
             {
                 ModelState.AddModelError("Name", "Display Order and Name should be different");
                 ModelState.AddModelError("DisplayOrder", "Display Order and Name should be different");
             }
 
-            var objCtegory = _UnitOfWork.Category.GetAll().ToList();
-            var existingCategoryNames = _UnitOfWork.Category.GetAll().Select(c => c.Name).ToList();
-            if(existingCategoryNames.Contains(obj.Name))
+            var existingCategoryNames = _UnitOfWork.Category.GetAll()
+                .Select(c => c.Name.ToLower())
+                .ToList();
+
+            if (existingCategoryNames.Contains(obj.Name))
             {
-                ModelState.AddModelError("Name", "Al Ready Exits");
+                ModelState.AddModelError("Name", "Category already exists");
             }
 
-            if (ModelState.IsValid) {
+            // Proceed if model is valid
+            if (ModelState.IsValid)
+            {
                 _UnitOfWork.Category.Add(obj);
                 _UnitOfWork.Save();
                 TempData["success"] = "The data is Created";
                 return RedirectToAction("Index", "Category");
             }
-            return View();
-            
+
+            return View(obj);
         }
 
         public IActionResult Edit(int? id)
