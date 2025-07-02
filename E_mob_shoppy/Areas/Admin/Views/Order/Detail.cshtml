@@ -257,7 +257,8 @@
                                 Model.orderHeader.OrderStatus != SD.StatusCancelled &&
                                 Model.orderHeader.OrderStatus != SD.StatusShipped)
                                 {
-                                    <button type="submit" asp-action="CancelOrder" class="btn btn-danger form-control my-1" value="Cancel Order">Cancel Order</button>
+                                    <button type="button" class="btn btn-danger form-control my-1 cancel-btn" data-action="@Url.Action("CancelOrder")">Cancel Order</button>
+
                                 }
                             }
                             @if (User.IsInRole(SD.Role_Customer))
@@ -266,7 +267,8 @@
                                 Model.orderHeader.OrderStatus != SD.StatusCancelled &&
                                 Model.orderHeader.OrderStatus != SD.StatusShipped)
                                 {
-                                    <button type="submit" asp-action="CancelOrder" class="btn btn-danger form-control my-1" value="Cancel Order">Cancel Order</button>
+                                   <button type="button" class="btn btn-danger form-control my-1 cancel-btn" data-action="@Url.Action("CancelOrder")">Cancel Order</button>
+
                                 }
                             }
                             @if (User.IsInRole(SD.Role_Customer)||User.IsInRole(SD.Role_Admin))
@@ -313,6 +315,41 @@
 
     </script>
 }
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const cancelButtons = document.querySelectorAll(".cancel-btn");
+
+        cancelButtons.forEach(btn => {
+            btn.addEventListener("click", function () {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you really want to cancel the order?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, cancel it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const form = btn.closest("form");
+                        const action = btn.getAttribute("data-action");
+
+                        const hidden = document.createElement("input");
+                        hidden.type = "hidden";
+                        hidden.name = "orderId";
+                        hidden.value = "@Model.orderHeader.OrderHeaderId";
+                        form.appendChild(hidden);
+
+                        form.action = action;
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+</script>
+
 
 
 
