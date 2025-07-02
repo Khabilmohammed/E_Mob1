@@ -3,6 +3,7 @@ using E_mob_shoppy.DataAccess.Repository.IRepository;
 using E_mob_shoppy.Models;
 using E_mob_shoppy.Utility;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace E_mob_shoppy.Areas.Admin.Controllers
@@ -30,6 +31,19 @@ namespace E_mob_shoppy.Areas.Admin.Controllers
             List<ApplicationUser> userlist= _db.ApplicationUsers.ToList();
             return Json(new {data= userlist });
                 
+        }
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var users = _db.ApplicationUsers.Select(u => new {
+                name = u.Name,
+                email = u.Email,
+                userName = u.UserName,
+                phoneNumber = u.PhoneNumber
+            }).ToList();
+
+            return Json(new { data = users });
         }
 
 
