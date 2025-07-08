@@ -16,5 +16,12 @@ namespace E_mob_shoppy.Models
         public string Code { get; set; }
 
         public double? DiscountAmount { get; set; }
+
+        public double? MinPurchaseAmount { get; set; }
+        public double? MaxPurchaseAmount { get; set; }
+
+        public DateTime StartDateTime { get; set; } = DateTime.Now;
+
+        public DateTime ExpiryDateTime { get; set; }
     }
 }

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace E_mob_shoppy.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -32,7 +32,7 @@ namespace E_mob_shoppy.DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Discriminator = table.Column<string>(type: "nvarchar(21)", maxLength: 21, nullable: false),
+                    Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     StreetAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -81,7 +81,11 @@ namespace E_mob_shoppy.DataAccess.Migrations
                     CouponId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Code = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DiscountAmount = table.Column<double>(type: "float", nullable: true)
+                    DiscountAmount = table.Column<double>(type: "float", nullable: true),
+                    MinPurchaseAmount = table.Column<double>(type: "float", nullable: true),
+                    MaxPurchaseAmount = table.Column<double>(type: "float", nullable: true),
+                    StartDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiryDateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -225,7 +229,7 @@ namespace E_mob_shoppy.DataAccess.Migrations
                     TrackingNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Carrier = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PaymentDueDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    PaymentDueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     SessionId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PaymentIntentId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AppliedCouponCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -388,11 +392,11 @@ namespace E_mob_shoppy.DataAccess.Migrations
 
             migrationBuilder.InsertData(
                 table: "Coupons",
-                columns: new[] { "CouponId", "Code", "DiscountAmount" },
+                columns: new[] { "CouponId", "Code", "DiscountAmount", "ExpiryDateTime", "MaxPurchaseAmount", "MinPurchaseAmount", "StartDateTime" },
                 values: new object[,]
                 {
-                    { 1, "abc123", 50.0 },
-                    { 2, "abcd123", 100.0 }
+                    { 1, "abc123", 50.0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, new DateTime(2025, 7, 8, 10, 44, 34, 746, DateTimeKind.Local).AddTicks(5417) },
+                    { 2, "abcd123", 100.0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, new DateTime(2025, 7, 8, 10, 44, 34, 746, DateTimeKind.Local).AddTicks(5432) }
                 });
 
             migrationBuilder.InsertData(

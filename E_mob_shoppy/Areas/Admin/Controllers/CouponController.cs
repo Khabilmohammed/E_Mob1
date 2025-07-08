@@ -35,29 +35,32 @@ namespace E_mob_shoppy.Areas.Admin.Controllers
 
         [HttpPost]
         [Authorize(Roles = SD.Role_Admin)]
-        public  IActionResult Create(Coupon obj)
+        public IActionResult Create(Coupon obj)
         {
-            var coupenExist =  _UnitOfWork.Coupon.Get(u => u.Code == obj.Code);
-            var existingCouponNames = _UnitOfWork.Coupon.GetAll().Select(c => c.Code).ToList();
-            if (existingCouponNames.Contains(obj.Code))
+           
+            obj.Code = obj.Code?.ToLower();
+
+            
+            var couponExist = _UnitOfWork.Coupon.Get(u => u.Code.ToLower() == obj.Code);
+
+            if (couponExist != null)
             {
-                TempData["existingCouponNamesError"] = "Already Exits This Coupon";
+                TempData["existingCouponNamesError"] = "This coupon code already exists.";
                 return View();
             }
+
             if (obj.DiscountAmount == null)
             {
-                TempData["discountError"] = "please enter the discount amount";
+                TempData["discountError"] = "Please enter the discount amount.";
                 return View();
             }
-            if (coupenExist == null)
+
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
-                {
-                    _UnitOfWork.Coupon.Add(obj);
-                    _UnitOfWork.Save();
-                    TempData["success"] = "Coupon created successfully";
-                    return RedirectToAction("Index");
-                }
+                _UnitOfWork.Coupon.Add(obj);
+                _UnitOfWork.Save();
+                TempData["success"] = "Coupon created successfully";
+                return RedirectToAction("Index");
             }
 
             return View();
@@ -114,16 +117,17 @@ namespace E_mob_shoppy.Areas.Admin.Controllers
             {
                 try
                 {
-                    // Fetch tracked entity first
                     var existingCoupon = _UnitOfWork.Coupon.Get(c => c.CouponId == obj.CouponId);
 
                     if (existingCoupon == null)
                         return NotFound();
 
-                    // Update only fields (EF is tracking this instance)
                     existingCoupon.Code = obj.Code;
                     existingCoupon.DiscountAmount = obj.DiscountAmount;
-                    
+                    existingCoupon.MinPurchaseAmount = obj.MinPurchaseAmount;
+                    existingCoupon.MaxPurchaseAmount = obj.MaxPurchaseAmount;
+                    existingCoupon.ExpiryDateTime = obj.ExpiryDateTime;
+                    existingCoupon.StartDateTime = obj.StartDateTime;
 
                     _UnitOfWork.Save();
                     TempData["success"] = "Coupon updated successfully";
@@ -131,7 +135,6 @@ namespace E_mob_shoppy.Areas.Admin.Controllers
                 }
                 catch (Exception ex)
                 {
-                    // Optional: log or debug ex.Message
                     TempData["error"] = "An error occurred while updating the coupon.";
                 }
             }
@@ -146,12 +149,20 @@ namespace E_mob_shoppy.Areas.Admin.Controllers
 
         #region APICALLS
         [HttpGet]
-        public  IActionResult GetAll()
+        public IActionResult GetAll()
         {
-            List<Coupon> objCouponList = _UnitOfWork.Coupon.GetAll().ToList();
+            var objCouponList = _UnitOfWork.Coupon.GetAll().Select(c => new
+            {
+                couponId = c.CouponId,
+                code = c.Code,
+                discountAmount = c.DiscountAmount,
+                minPurchaseAmount = c.MinPurchaseAmount,
+                maxPurchaseAmount = c.MaxPurchaseAmount,
+                expiryDateTime = c.ExpiryDateTime
+            }).ToList();
+
             return Json(new { data = objCouponList });
         }
-
         [HttpDelete]
         public  IActionResult Delete(int? id)
         {

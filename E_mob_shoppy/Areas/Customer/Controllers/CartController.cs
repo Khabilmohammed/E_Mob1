@@ -96,67 +96,66 @@ namespace E_mob_shoppy.Areas.Customer.Controllers
         }
 
 
-		
-		public  IActionResult Coupon(string coupon, int? OrderTotal)
-		{
-			if (string.IsNullOrEmpty(coupon) || OrderTotal == null)
-			{
-				return BadRequest(); 
-			}
 
-			var validCoupon =  _unitOfWork.Coupon.Get(u => u.Code == coupon);
+        public IActionResult Coupon(string coupon, int? OrderTotal)
+        {
+            if (string.IsNullOrEmpty(coupon) || OrderTotal == null)
+            {
+                return Json(new { success = false, errorMessage = "Invalid request." });
+            }
 
-			if (validCoupon != null)
-			{
-				if (OrderTotal >= validCoupon.DiscountAmount)
-				{
-					double discountPrice;
-					double cartTotal = Convert.ToDouble(OrderTotal);
-					if (validCoupon.DiscountAmount > 0)
-					{
-						discountPrice = (double)(cartTotal - validCoupon.DiscountAmount);
-					}
-					else
-					{
-						discountPrice = (double)(cartTotal - (cartTotal) * (validCoupon.DiscountAmount / 100));
-					}
+            var validCoupon = _unitOfWork.Coupon.Get(u => u.Code.ToLower() == coupon.ToLower());
 
-				     double newTotal = (double)(OrderTotal - discountPrice);
+            if (validCoupon == null)
+            {
+                return Json(new { success = false, errorMessage = "Coupon not found." });
+            }
 
-					var response = new
-					{
-						success = true,
-						discountPrice,
-						newTotal   
-					};
+            double cartTotal = Convert.ToDouble(OrderTotal);
 
-					return Json(response); // Return the discount price
-				}
-				else
-				{
-					TempData["error"] = "Order total is below the minimum purchase amount.";
+            // Check if expired
+            if (validCoupon.ExpiryDateTime < DateTime.Now)
+            {
+                return Json(new { success = false, errorMessage = "Coupon has expired." });
+            }
 
-					var responses = new
-					{
-						success = false,
-						errorMessage = "Order total is below the minimum purchase amount."
-					};
-					return Json(responses);
-					// Return an appropriate error response
-				}
-			}
-			TempData["error"] = "Coupon not found.";
-			var responsed = new
-			{
-				success = false,
-				errorMessage = "Coupon not found"
-			};
-			return Json(responsed);
-		}
+            // Check minimum purchase amount
+            if (validCoupon.MinPurchaseAmount.HasValue && cartTotal < validCoupon.MinPurchaseAmount.Value)
+            {
+                return Json(new
+                {
+                    success = false,
+                    errorMessage = $"Minimum purchase should be ₹{validCoupon.MinPurchaseAmount.Value}"
+                });
+            }
+
+            // Check maximum purchase amount
+            if (validCoupon.MaxPurchaseAmount.HasValue && cartTotal > validCoupon.MaxPurchaseAmount.Value)
+            {
+                return Json(new
+                {
+                    success = false,
+                    errorMessage = $"Maximum purchase allowed is ₹{validCoupon.MaxPurchaseAmount.Value}"
+                });
+            }
+
+            // Calculate discount
+            double discountAmount = validCoupon.DiscountAmount ?? 0;
+            double newTotal = cartTotal - discountAmount;
+            if (newTotal < 0) newTotal = 0;
+
+            return Json(new
+            {
+                success = true,
+                discountPrice = discountAmount,
+                newTotal = newTotal
+            });
+        }
 
 
 
-		public  double CouponCheckout(string coupon, int? OrderTotal)
+
+        public double CouponCheckout(string coupon, int? OrderTotal)
 		{
 			if (string.IsNullOrEmpty(coupon) || OrderTotal == null)
 			{

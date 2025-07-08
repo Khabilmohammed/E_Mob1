@@ -17,7 +17,7 @@ namespace E_mob_shoppy.DataAccess.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0-rc.1.23419.6")
+                .HasAnnotation("ProductVersion", "7.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -78,6 +78,18 @@ namespace E_mob_shoppy.DataAccess.Migrations
                     b.Property<double?>("DiscountAmount")
                         .HasColumnType("float");
 
+                    b.Property<DateTime>("ExpiryDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double?>("MaxPurchaseAmount")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("MinPurchaseAmount")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("StartDateTime")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("CouponId");
 
                     b.ToTable("Coupons");
@@ -87,13 +99,17 @@ namespace E_mob_shoppy.DataAccess.Migrations
                         {
                             CouponId = 1,
                             Code = "abc123",
-                            DiscountAmount = 50.0
+                            DiscountAmount = 50.0,
+                            ExpiryDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StartDateTime = new DateTime(2025, 7, 8, 10, 44, 34, 746, DateTimeKind.Local).AddTicks(5417)
                         },
                         new
                         {
                             CouponId = 2,
                             Code = "abcd123",
-                            DiscountAmount = 100.0
+                            DiscountAmount = 100.0,
+                            ExpiryDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StartDateTime = new DateTime(2025, 7, 8, 10, 44, 34, 746, DateTimeKind.Local).AddTicks(5432)
                         });
                 });
 
@@ -213,8 +229,8 @@ namespace E_mob_shoppy.DataAccess.Migrations
                     b.Property<DateTime>("PaymentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateOnly>("PaymentDueDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("PaymentDueDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("PaymentIntentId")
                         .HasColumnType("nvarchar(max)");
@@ -480,8 +496,7 @@ namespace E_mob_shoppy.DataAccess.Migrations
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("nvarchar(21)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)

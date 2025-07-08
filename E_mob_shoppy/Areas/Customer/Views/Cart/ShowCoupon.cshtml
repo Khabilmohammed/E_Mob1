@@ -3,24 +3,27 @@
     <div class="content-header">
 
         <div class="container">
-            @foreach(var  coupon in Model)
+            @foreach (var coupon in Model)
             {
                 <div class="">
                     <div class="coupon-card mb-10">
                         <img src="https://i.postimg.cc/KvTqpZq9/uber.png" class="logo">
                         <h3>@coupon.DiscountAmount Rupees will get Discounted from all Products<br>using HDFC Credit Card</h3>
-                        <di class="coupon-row">
+
+                        <div class="coupon-row">
                             <span id="cpnCode">@coupon.Code</span>
                             <span id="cpnBtn" class="text-danger">Copy Code</span>
-                        </di>
-                        <p>Valid Till: -------</p>
+                        </div>
+
+                        <p>Valid Till: @coupon.ExpiryDateTime.ToString("dd MMM yyyy hh:mm tt")</p>
+                        <p>Min Purchase: ₹@coupon.MinPurchaseAmount</p>
+                        <p>Max Purchase: ₹@coupon.MaxPurchaseAmount</p>
+
                         <div class="circle1"></div>
                         <div class="circle2"></div>
                     </div>
                 </div>
-               
             }
-           
         </div>
     </div>
 </section>

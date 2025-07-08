@@ -25,6 +25,32 @@
                         <input asp-for="DiscountAmount" class="form-control" />
                         <span class="text-danger">@TempData["discountError"]</span>
                     </div>
+                    
+                    <div class="form-group">
+                        <label asp-for="MinPurchaseAmount" class="control-label"></label>
+                        <input asp-for="MinPurchaseAmount" class="form-control" />
+                        <span asp-validation-for="MinPurchaseAmount" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="MaxPurchaseAmount" class="control-label"></label>
+                        <input asp-for="MaxPurchaseAmount" class="form-control" />
+                        <span asp-validation-for="MaxPurchaseAmount" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="StartDateTime" class="control-label"></label>
+                        <input asp-for="StartDateTime" class="form-control" type="datetime-local" />
+                        <span asp-validation-for="StartDateTime" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="ExpiryDateTime" class="control-label"></label>
+                        <input asp-for="ExpiryDateTime" class="form-control" type="datetime-local" />
+                        <span asp-validation-for="ExpiryDateTime" class="text-danger"></span>
+                    </div>
+
+
                     <div class="row">
                         <div class="col-6 col-md-3">
                             <button type="submit" class="btn btn-primary form-control">Create</button>
