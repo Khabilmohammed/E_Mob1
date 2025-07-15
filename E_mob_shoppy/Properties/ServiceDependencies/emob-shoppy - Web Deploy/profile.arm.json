@@ -7,7 +7,7 @@
   "parameters": {
     "resourceGroupName": {
       "type": "string",
-      "defaultValue": "emob",
+      "defaultValue": "emob_group",
       "metadata": {
         "description": "Name of the resource group for the resource. It is recommended to put resources under same resource group for better tracking."
       }
@@ -21,7 +21,7 @@
     },
     "resourceName": {
       "type": "string",
-      "defaultValue": "emob",
+      "defaultValue": "emob-shoppy",
       "metadata": {
         "description": "Name of the main resource to be created by this template."
       }
@@ -81,7 +81,7 @@
                   "metadata": [
                     {
                       "name": "CURRENT_STACK",
-                      "value": "dotnetcore"
+                      "value": "dotnet"
                     }
                   ]
                 }
