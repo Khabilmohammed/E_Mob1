@@ -77,7 +77,7 @@ namespace E_mob_shoppy
                 app.MapControllerRoute(
                     name: "default",
                     pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
-
+                System.IO.File.AppendAllText("D:\\home\\site\\wwwroot\\log.txt", "App started at " + DateTime.Now + "\n");
                 app.Run();
             }
             catch (Exception ex)
