@@ -89,10 +89,16 @@ namespace E_mob_shoppy
 
         private static void SeedDatabase(WebApplication app)
         {
-            using (var scope = app.Services.CreateScope())
+            try
             {
+                using var scope = app.Services.CreateScope();
                 var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
                 dbInitializer.Initialize();
+            }
+            catch (Exception ex)
+            {
+                System.IO.File.WriteAllText("D:\\home\\site\\wwwroot\\seed-error.txt", ex.ToString());
+                throw;
             }
         }
     }
