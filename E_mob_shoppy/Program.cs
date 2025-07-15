@@ -20,7 +20,12 @@ namespace E_mob_shoppy
                 var builder = WebApplication.CreateBuilder(args);
                 builder.Services.AddControllersWithViews();
                 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(
+                    builder.Configuration.GetConnectionString("DefaultConnection"),
+                    sqlOptions => sqlOptions.EnableRetryOnFailure(maxRetryCount: 5,
+                    maxRetryDelay: TimeSpan.FromSeconds(10),
+                    errorNumbersToAdd: null)
+                ));
 
                 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
 
@@ -35,11 +40,11 @@ namespace E_mob_shoppy
                     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
                 });
 
-                builder.Services.AddAuthentication().AddGoogle(options =>
+               /* builder.Services.AddAuthentication().AddGoogle(options =>
                 {
                     options.ClientId = "xxx"; // Replace with real values from config
                     options.ClientSecret = "xxx";
-                });
+                });*/
 
                 builder.Services.AddDistributedMemoryCache();
                 builder.Services.AddSession(options =>
@@ -77,7 +82,8 @@ namespace E_mob_shoppy
                 app.MapControllerRoute(
                     name: "default",
                     pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
-                System.IO.File.AppendAllText("D:\\home\\site\\wwwroot\\log.txt", "App started at " + DateTime.Now + "\n");
+                string logPath = "D:\\home\\LogFiles\\startup-log.txt";
+                System.IO.File.AppendAllText(logPath, $"App started at {DateTime.Now}\n");
                 app.Run();
             }
             catch (Exception ex)
@@ -89,18 +95,32 @@ namespace E_mob_shoppy
 
         private static void SeedDatabase(WebApplication app)
         {
-            try
+            using var scope = app.Services.CreateScope();
+            var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+
+            int retryCount = 0;
+            const int maxRetries = 5;
+
+            while (true)
             {
-                using var scope = app.Services.CreateScope();
-                var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
-                dbInitializer.Initialize();
-            }
-            catch (Exception ex)
-            {
-                System.IO.File.WriteAllText("D:\\home\\site\\wwwroot\\seed-error.txt", ex.ToString());
-                throw;
+                try
+                {
+                    dbInitializer.Initialize();
+                    break; // success
+                }
+                catch (Exception ex)
+                {
+                    retryCount++;
+                    System.IO.File.AppendAllText("D:\\home\\site\\wwwroot\\seed-error.txt", $"Retry {retryCount}: {ex.Message}\n");
+
+                    if (retryCount >= maxRetries)
+                        throw;
+
+                    Thread.Sleep(3000); // wait 3 seconds and retry
+                }
             }
         }
+
     }
 
 }
