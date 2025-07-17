@@ -12,6 +12,7 @@ namespace E_mob_shoppy.Models.ViewModel
         public OrderHeader OrderHeader { get; set; }
 
         public Coupon Coupon { get; set; }
-       
+        public Address NewAddress { get; set; } = new Address();
+        public IEnumerable<Address> SavedAddresses { get; set; }
     }
 }

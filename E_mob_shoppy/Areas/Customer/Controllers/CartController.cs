@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Build.Framework;
+using Microsoft.EntityFrameworkCore;
 using Stripe;
 using Stripe.Checkout;
 using System.Security.Claims;
+using Address = E_mob_shoppy.Models.Address;
 
 namespace E_mob_shoppy.Areas.Customer.Controllers
 {
@@ -17,18 +19,20 @@ namespace E_mob_shoppy.Areas.Customer.Controllers
     public class CartController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+       
         [BindProperty]
         public ShoppingCartVM shoppingCartVM { get; set; }
 
         public CartController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
+           
         }
         public IActionResult Index()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-
+            
             bool isCartEmpty = true;
 
             shoppingCartVM = new()
@@ -54,13 +58,15 @@ namespace E_mob_shoppy.Areas.Customer.Controllers
             return View(shoppingCartVM);
         }
 
-		public IActionResult ShowCoupon()
-		{
+        public IActionResult ShowCoupon()
+        {
             var validCoupons = _unitOfWork.Coupon.GetAll()
         .Where(c => c.ExpiryDateTime == null || c.ExpiryDateTime > DateTime.Now);
 
             return View(validCoupons);
         }
+
+     
 
         public IActionResult Summary()
         {
@@ -83,6 +89,9 @@ namespace E_mob_shoppy.Areas.Customer.Controllers
             shoppingCartVM.OrderHeader.City = shoppingCartVM.OrderHeader.ApplicationUser.City;
             shoppingCartVM.OrderHeader.postalCode = shoppingCartVM.OrderHeader.ApplicationUser.PostalCode;
             shoppingCartVM.OrderHeader.state = shoppingCartVM.OrderHeader.ApplicationUser.State;
+
+            var savedAddresses = _unitOfWork.Address.GetAll(a => a.ApplicationUserId == userId).ToList();
+            shoppingCartVM.SavedAddresses = savedAddresses;
 
             var eligibleCoupons = _unitOfWork.Coupon.GetAll()
         .Where(c => c.StartDateTime <= DateTime.Now && c.ExpiryDateTime > DateTime.Now)

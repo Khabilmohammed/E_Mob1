@@ -1,4 +1,5 @@
-﻿using System;
+﻿using E_mob_shoppy.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,7 @@ namespace E_mob_shoppy.DataAccess.Repository.IRepository
         IOfferRepository Offer { get; }
 
         IWalletHistoryRepository WalletHistory { get; }
+        IRepository<Address> Address { get; }
 
         void Save();
     }

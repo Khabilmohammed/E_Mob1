@@ -31,12 +31,19 @@ namespace E_mob_shoppy.DataAccess.Data
 
         public DbSet<WalletHistory> WalletHistories { get; set; }
 
+        public DbSet<Address> Addresses { get; set; }
+
         public DbSet<Offer> offers { get; set; }
 
       
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Address>()
+            .HasOne(a => a.ApplicationUser)
+            .WithMany(u => u.Addresses)
+            .HasForeignKey(a => a.ApplicationUserId);
 
             modelBuilder.Entity<Category>().HasData
                 (new Category { Category_Id = 1, Name = "Mobile", Description = "HHhihkj", DisplayOrder = 1 },

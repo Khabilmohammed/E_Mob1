@@ -2,158 +2,138 @@
 
 
 <form method="post">
-	<br />
-	<div class="container">
+	<div class="container mt-4">
 		<div class="card shadow border-0">
-			<div class="card-header bg-secondary bg-gradient text-light ml-0 py-4">
-				<div class="row px-4">
-					<div class="col-6">
-						<h5 class="pt-2 text-white">
-							Order Summary
-						</h5>
-					</div>
-				<div class="col-6 text-end">
-					<a asp-action="Index" class="btn btn-outline-danger btn-sm">Back to Cart</a>
-				</div>
-				</div>
+			<div class="card-header bg-secondary text-white py-3 px-4 d-flex justify-content-between align-items-center">
+				<h5 class="mb-0">Order Summary</h5>
+				<a asp-action="Index" class="btn btn-outline-light btn-sm">← Back to Cart</a>
 			</div>
-			<div class="card-body">
-				<div class="container rounded p-2">
-					<div class="row">
-						<div class="col-12 col-lg-6 pb-4">
-							<div class="row">
-								<h4 class="d-flex justify-content-between align-items-center mb-3">
-									<span class="text-info">Shipping Details:</span>
-								</h4>
-							</div>
-							<div class="row my-1">
-								<div class="col-3">
-									<label>Name</label>
-								</div>
-								<div class="col-9">
-									<input asp-for="OrderHeader.Name" class="form-control" />
-									<span asp-validation-for="OrderHeader.Name" class="text-danger"></span>
-								</div>
-							</div>
-							<div class="row my-1">
-								<div class="col-3">
-									<label>Phone</label>
-								</div>
-								<div class="col-9">
-									<input asp-for="OrderHeader.PhoneNumber" class="form-control" />
-									<span asp-validation-for="OrderHeader.PhoneNumber" class="text-danger"></span>
-								</div>
-							</div>
-							<div class="row my-1">
-								<div class="col-3">
-									<label>Street Address</label>
-								</div>
-								<div class="col-9">
-									<input asp-for="OrderHeader.streetAddress" class="form-control" />
-									<span asp-validation-for="OrderHeader.streetAddress" class="text-danger"></span>
-								</div>
-							</div>
-							<div class="row my-1">
-								<div class="col-3">
-									<label>City</label>
-								</div>
-								<div class="col-9">
-									<input asp-for="OrderHeader.City" class="form-control" />
-									<span asp-validation-for="OrderHeader.City" class="text-danger"></span>
-									
-								</div>
-							</div>
-							<div class="row my-1">
-								<div class="col-3">
-									<label>State</label>
-								</div>
-								<div class="col-9">
-									<input asp-for="OrderHeader.state" class="form-control" />
-									<span asp-validation-for="OrderHeader.state" class="text-danger"></span>
-								</div>
-							</div>
-							<div class="row my-1">
-								<div class="col-3">
-									<label>Postal Code</label>
-								</div>
-								<div class="col-9">
-									<input asp-for="OrderHeader.postalCode" class="form-control" />
-									<span asp-validation-for="OrderHeader.postalCode" class="text-danger"></span>
-								</div>
-							</div>
-							
-						</div>
-						<div class="col-12 col-lg-5 offset-lg-1">
-							<h4 class="d-flex justify-content-between align-items-center mb-3">
-								<span class="text-info">Order Summary:</span>
-							</h4>
-							<ul class="list-group mb-3">
-								@foreach(var details in Model.ShoppingCartList)
-								{
-									<li class="list-group-item d-flex justify-content-between">
-										<div>
-											<h6 class="my-0">@details.Product.ProductName</h6>
-											<small class="text-muted">Quantity: @details.count</small>
-										</div>
-										<span class="text-muted">@((details.Price*details.count).ToString("c"))</span>
-									</li>
-								}
-								
 
+			@if (TempData["success"] != null)
+			{
+				<div class="alert alert-success">@TempData["success"]</div>
+			}
+			@if (TempData["error"] != null)
+			{
+				<div class="alert alert-danger">@TempData["error"]</div>
+			}
 
-								<li class="list-group-item d-flex justify-content-between bg-light">
-									<small class="text-info">Total (INR)</small>
-									<strong class="text-info">@Model.OrderHeader.OrderTotal.ToString("c")</strong>
-								</li>
-								<li class="list-group-item d-flex justify-content-between align-items-center">
-									<select id="couponSelect" asp-for="OrderHeader.AppliedCouponCode" class="form-control">
-										<option value="">-- Select Coupon --</option>
-										@foreach (var coupon in ViewBag.EligibleCoupons)
-										{
-											<option value="@coupon.Code">@coupon.Code (@coupon.DiscountAmount?.ToString("C"))</option>
-										}
-									</select>
-									<button type="button" id="applyCouponButton" class="btn btn-outline-primary mt-2">Apply</button>
-								</li>
-								<li class="list-group-item d-flex justify-content-between align-items-center">
-									Coupon Discount
-									<span id="newTotal">@ViewBag.reducedAmount</span>
-								</li>
-							</ul>
-						</div>
-						<div class="card-footer py-2">
-							<ul class="list-group list-group-minimal">
-								<li class="list-group-item d-flex justify-content-between align-items-center text-dark fs-18">
-									Total
-
-									<span id="discountPrice"> </span>
-									@if (ViewBag.DiscountPrice != null)
-									{
-									<span id="discountPrice">@ViewBag.DiscountPrice</span>
-									}
-									else
-									{
-									<span>@Model.OrderHeader.OrderTotal.ToString("c")</span>
-									}  
-								</li>
-							</ul>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="card-footer">
+			<div class="card-body px-4">
 				<div class="row">
-					<div class="col-12 col-md-8 pt-2">
-						
+					<!-- Shipping Address & Form -->
+					<div class="col-lg-6 mb-4">
+						<h5 class="mb-3 text-primary">Shipping Details</h5>
+
+						<div class="mb-3">
+							<label class="form-label fw-semibold">Select Saved Address</label>
+							<div class="d-flex">
+								<select id="savedAddressDropdown" class="form-select me-2">
+									<option value="">-- Select --</option>
+									@foreach (var address in Model.SavedAddresses)
+									{
+										<option value="@address.Id"
+												data-street="@address.StreetAddress"
+												data-city="@address.City"
+												data-state="@address.State"
+												data-postal="@address.PostalCode">
+											@address.StreetAddress, @address.City
+										</option>
+									}
+								</select>
+								<button type="button" class="btn btn-outline-primary">
+									<a asp-area="Customer" asp-controller="Address" asp-action="Create">Add New Address</a>
+
+								</button>
+							</div>
+						</div>
+
+						<div class="row g-3">
+							<div class="col-md-6">
+								<label class="form-label">Name</label>
+								<input asp-for="OrderHeader.Name" class="form-control" />
+								<span asp-validation-for="OrderHeader.Name" class="text-danger small"></span>
+							</div>
+							<div class="col-md-6">
+								<label class="form-label">Phone</label>
+								<input asp-for="OrderHeader.PhoneNumber" class="form-control" />
+								<span asp-validation-for="OrderHeader.PhoneNumber" class="text-danger small"></span>
+							</div>
+							<div class="col-12">
+								<label class="form-label">Street Address</label>
+								<input asp-for="OrderHeader.streetAddress" class="form-control" />
+								<span asp-validation-for="OrderHeader.streetAddress" class="text-danger small"></span>
+							</div>
+							<div class="col-md-6">
+								<label class="form-label">City</label>
+								<input asp-for="OrderHeader.City" class="form-control" />
+								<span asp-validation-for="OrderHeader.City" class="text-danger small"></span>
+							</div>
+							<div class="col-md-3">
+								<label class="form-label">State</label>
+								<input asp-for="OrderHeader.state" class="form-control" />
+								<span asp-validation-for="OrderHeader.state" class="text-danger small"></span>
+							</div>
+							<div class="col-md-3">
+								<label class="form-label">Postal Code</label>
+								<input asp-for="OrderHeader.postalCode" class="form-control" />
+								<span asp-validation-for="OrderHeader.postalCode" class="text-danger small"></span>
+							</div>
+						</div>
 					</div>
-					<div class="col-12 col-md-4">
-						<button type="submit" value="Place Order" class="btn btn-primary form-control">Place Order</button>
+
+					<!-- Order Summary -->
+					<div class="col-lg-6">
+						<h5 class="mb-3 text-primary">Items & Total</h5>
+
+						<ul class="list-group mb-3">
+							@foreach (var item in Model.ShoppingCartList)
+							{
+								<li class="list-group-item d-flex justify-content-between">
+									<div>
+										<strong>@item.Product.ProductName</strong><br />
+										<small class="text-muted">Qty: @item.count</small>
+									</div>
+									<span>@(item.Price* item.count)</span>
+								</li>
+							}
+							<li class="list-group-item d-flex justify-content-between">
+								<span>Subtotal</span>
+								<strong>@Model.OrderHeader.OrderTotal.ToString("c")</strong>
+							</li>
+							<li class="list-group-item d-flex align-items-center">
+								<select id="couponSelect" asp-for="OrderHeader.AppliedCouponCode" class="form-select me-2">
+									<option value="">-- Select Coupon --</option>
+									@foreach (var coupon in ViewBag.EligibleCoupons)
+									{
+										<option value="@coupon.Code">@coupon.Code (@coupon.DiscountAmount?.ToString("C"))</option>
+									}
+								</select>
+								<button type="button" id="applyCouponButton" class="btn btn-outline-success">Apply</button>
+							</li>
+							<li class="list-group-item d-flex justify-content-between">
+								<span>Discount</span>
+								<span id="discountPrice">
+									@(ViewBag.DiscountPrice ?? 0)
+								</span>
+							</li>
+							<li class="list-group-item d-flex justify-content-between fs-5 fw-bold">
+								Total
+								<span id="newTotal">@(ViewBag.DiscountPrice ?? Model.OrderHeader.OrderTotal.ToString("c"))</span>
+							</li>
+						</ul>
 					</div>
 				</div>
+			</div>
+
+			<!-- Submit -->
+			<div class="card-footer text-end px-4 py-3">
+				<button type="submit" class="btn btn-primary px-4 py-2">Place Order</button>
 			</div>
 		</div>
 	</div>
 </form>
+
+
 
 @section Scripts{
 	@{
@@ -169,32 +149,52 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 	$(document).ready(function () {
-			$("#applyCouponButton").click(function () {
-		var coupon = $("#couponSelect").val();
-		var orderTotal = "@Model.OrderHeader.OrderTotal";
 
-		var url = "/Customer/Cart/Coupon?coupon=" + coupon + "&orderTotal=" + orderTotal;
+		// Apply coupon button logic
+		$("#applyCouponButton").click(function () {
+			var coupon = $("#couponSelect").val();
+			var orderTotal = "@Model.OrderHeader.OrderTotal";
 
-		$.ajax({
-			url: url,
-			type: "GET",
-			success: function (response) {
-				if (response.success) {
-					var discountPrice = response.discountPrice;
-					var newTotal = response.newTotal;
+			var url = "/Customer/Cart/Coupon?coupon=" + coupon + "&orderTotal=" + orderTotal;
 
-					$("#discountPrice").text(discountPrice.toFixed(2));
-					$("#newTotal").text(newTotal.toFixed(2));
-				} else {
-					toastr.error(response.errorMessage);
+			$.ajax({
+				url: url,
+				type: "GET",
+				success: function (response) {
+					if (response.success) {
+						var discountPrice = response.discountPrice;
+						var newTotal = response.newTotal;
+
+						$("#discountPrice").text(discountPrice.toFixed(2));
+						$("#newTotal").text(newTotal.toFixed(2));
+					} else {
+						toastr.error(response.errorMessage);
+					}
+				},
+				error: function (xhr, status, error) {
+					console.log(error);
 				}
-			},
-			error: function (xhr, status, error) {
-				console.log(error);
+			});
+		});
+
+		// Saved address dropdown change logic
+		$("#savedAddressDropdown").change(function () {
+			var selectedOption = $(this).find("option:selected");
+
+			var street = selectedOption.data("street");
+			var city = selectedOption.data("city");
+			var state = selectedOption.data("state");
+			var postal = selectedOption.data("postal");
+
+			if (street) {
+				$("#OrderHeader_streetAddress").val(street);
+				$("#OrderHeader_City").val(city);
+				$("#OrderHeader_state").val(state);
+				$("#OrderHeader_postalCode").val(postal);
 			}
 		});
-	});
 
 	});
 </script>
+
 

@@ -1,0 +1,53 @@
+﻿@model AddressVM
+
+<section class="content-main">
+    <form asp-area="Customer" asp-controller="Address" asp-action="Create" method="post">
+        <div class="content-header">
+            <div>
+                <h2 class="content-title card-title">Add New Address</h2>
+                <p>Please enter your shipping address below.</p>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row gx-3 gy-3 row-cols-1 row-cols-md-2 row-cols-xl-2">
+                    <input asp-for="Address.ApplicationUserId" value="1" hidden />
+                    <div class="col">
+                        <label asp-for="Address.StreetAddress" class="form-label fw-semibold">Street Address</label>
+                        <input asp-for="Address.StreetAddress" class="form-control" />
+                        <span asp-validation-for="Address.StreetAddress" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col">
+                        <label asp-for="Address.City" class="form-label fw-semibold">City</label>
+                        <input asp-for="Address.City" class="form-control" />
+                        <span asp-validation-for="Address.City" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col">
+                        <label asp-for="Address.State" class="form-label fw-semibold">State</label>
+                        <input asp-for="Address.State" class="form-control" />
+                        <span asp-validation-for="Address.State" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col">
+                        <label asp-for="Address.PostalCode" class="form-label fw-semibold">Postal Code</label>
+                        <input asp-for="Address.PostalCode" class="form-control" />
+                        <span asp-validation-for="Address.PostalCode" class="text-danger small"></span>
+                    </div>
+
+                </div> <!-- row -->
+
+                <div class="mt-4 text-end">
+                    <button type="submit" class="btn btn-primary px-4">Save Address</button>
+                    <a asp-controller="Cart" asp-action="Summary" class="btn btn-secondary px-4">Cancel</a>
+                </div>
+            </div> <!-- card-body -->
+        </div> <!-- card -->
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

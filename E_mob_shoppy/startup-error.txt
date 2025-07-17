@@ -1,8 +1,7 @@
-Microsoft.Extensions.Hosting.HostAbortedException: The host was aborted.
-   at Microsoft.Extensions.Hosting.HostFactoryResolver.HostingListener.ThrowHostAborted()
-   at Microsoft.Extensions.Hosting.HostFactoryResolver.HostingListener.OnNext(KeyValuePair`2 value)
-   at System.Diagnostics.DiagnosticListener.Write(String name, Object value)
-   at Microsoft.Extensions.Hosting.HostBuilder.ResolveHost(IServiceProvider serviceProvider, DiagnosticListener diagnosticListener)
-   at Microsoft.Extensions.Hosting.HostApplicationBuilder.Build()
-   at Microsoft.AspNetCore.Builder.WebApplicationBuilder.Build()
-   at E_mob_shoppy.Program.Main(String[] args) in C:\Users\User\source\repos\E_Mob1\E_mob_shoppy\Program.cs:line 62
+System.IO.DirectoryNotFoundException: Could not find a part of the path 'D:\home\site\wwwroot\seed-error.txt'.
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.CreateFile(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options)
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.File.OpenHandle(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize)
+   at System.IO.File.WriteToFile(String path, FileMode mode, String contents, Encoding encoding)
+   at E_mob_shoppy.Program.SeedDatabase(WebApplication app) in C:\Users\User\source\repos\E_Mob1\E_mob_shoppy\Program.cs:line 125
+   at E_mob_shoppy.Program.Main(String[] args) in C:\Users\User\source\repos\E_Mob1\E_mob_shoppy\Program.cs:line 79

@@ -2,14 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading;
-using System.Threading.Tasks;
+using E_mob_shoppy.DataAccess.Data;
 using E_mob_shoppy.Models;
 using E_mob_shoppy.Utility;
 using Microsoft.AspNetCore.Authentication;
@@ -21,7 +14,16 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Text.Encodings.Web;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace E_mob_shoppy.Areas.Identity.Pages.Account
 {
@@ -34,14 +36,14 @@ namespace E_mob_shoppy.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
-
+        private readonly ApplicationDbContext _dbContext;
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManger,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender, ApplicationDbContext dbContext)
         {
             _roleManger = roleManger;
             _userManager = userManager;
@@ -50,6 +52,7 @@ namespace E_mob_shoppy.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _dbContext = dbContext;
         }
 
         /// <summary>
@@ -161,6 +164,19 @@ namespace E_mob_shoppy.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
+
+                    var address = new Address
+                    {
+                        ApplicationUserId = user.Id,
+                        StreetAddress = user.StreetAddress,
+                        City = user.City,
+                        State = user.State,
+                        PostalCode = user.PostalCode,
+                        IsDefault = true // optional
+                    };
+                    _dbContext.Addresses.Add(address);
+                    await _dbContext.SaveChangesAsync();
+
                     _logger.LogInformation("User created a new account with password.");
 
 

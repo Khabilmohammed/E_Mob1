@@ -17,7 +17,11 @@ namespace E_mob_shoppy.Models
         public string? State { get; set; }
         public string? PostalCode { get; set;}
 
+        public ICollection<Address> Addresses { get; set; } = new List<Address>();
+
         public double? wallet {  get; set; }    
+
+
 
     }
 }

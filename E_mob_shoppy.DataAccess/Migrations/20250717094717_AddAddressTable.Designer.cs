@@ -4,6 +4,7 @@ using E_mob_shoppy.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_mob_shoppy.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250717094717_AddAddressTable")]
+    partial class AddAddressTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,18 +38,15 @@ namespace E_mob_shoppy.DataAccess.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("City")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("IsDefault")
+                    b.Property<bool>("IsDefault")
                         .HasColumnType("bit");
 
                     b.Property<string>("PostalCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("State")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("StreetAddress")
@@ -139,7 +139,7 @@ namespace E_mob_shoppy.DataAccess.Migrations
                             Code = "abc123",
                             DiscountAmount = 50.0,
                             ExpiryDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StartDateTime = new DateTime(2025, 7, 17, 20, 2, 24, 161, DateTimeKind.Local).AddTicks(5402)
+                            StartDateTime = new DateTime(2025, 7, 17, 15, 17, 17, 544, DateTimeKind.Local).AddTicks(1399)
                         },
                         new
                         {
@@ -147,7 +147,7 @@ namespace E_mob_shoppy.DataAccess.Migrations
                             Code = "abcd123",
                             DiscountAmount = 100.0,
                             ExpiryDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StartDateTime = new DateTime(2025, 7, 17, 20, 2, 24, 161, DateTimeKind.Local).AddTicks(5416)
+                            StartDateTime = new DateTime(2025, 7, 17, 15, 17, 17, 544, DateTimeKind.Local).AddTicks(1413)
                         });
                 });
 
