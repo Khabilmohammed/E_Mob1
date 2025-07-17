@@ -1,58 +1,95 @@
-﻿@model ApplicationUser
-
-
+﻿@model WalletViewModel
 
 <section class="content-main">
-    <div class="content-header">
+    <div class="content-header mb-3">
         <div>
-            <h2 class="content-title card-title">User Wallet </h2>
-            <p>All Details of Your Wallet Is Here. </p>
+            <h2 class="content-title card-title">User Wallet</h2>
+            <p>All details of your wallet are here, including transaction history.</p>
         </div>
-
     </div>
-    <div class="card">
+
+    <div class="card mb-4">
         <div class="card-body">
             <div class="row">
+                <!-- User Info -->
                 <div class="col-md-3">
                     <form>
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label class="form-label">Name</label>
-                            <input type="text" class="form-control" asp-for="Name" disabled />
+                            <input type="text" class="form-control" value="@Model.ApplicationUser.Name" disabled />
                         </div>
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label class="form-label">Email</label>
-                            <input type="text" class="form-control" asp-for="Email" disabled />
+                            <input type="text" class="form-control" value="@Model.ApplicationUser.Email" disabled />
                         </div>
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label class="form-label">Phone Number</label>
-                            <input type="text" class="form-control" asp-for="PhoneNumber" disabled/>
+                            <input type="text" class="form-control" value="@Model.ApplicationUser.PhoneNumber" disabled />
                         </div>
                     </form>
                 </div>
-                <div class="col-md-9 mt-25">
-                    <div class="table-responsive">
-                        @if (Model.wallet != null)
-                        {
-                            <article class="box">
-                                <p class="mb-0 text-muted"></p>
-                                <h5 class="text-success"></h5>
-                                <p class="mb-0 text-muted">Wallet Amount:</p>
-                                <h5 class="text-success mb-0">$@Model.wallet</h5>
-                            </article>
-                        }
-                        @if (Model.wallet == null)
-                        {
-                            <article class="box">
-                                <p class="mb-0 text-muted"></p>
-                                <h5 class="text-success"></h5>
-                                <p class="mb-0 text-muted">Wallet Amount:</p>
-                                <h5 class="text-danger mb-0">Nothing in the Wallet</h5>
-                            </article>
-                        }
 
-                    </div>
-                </div> <!-- .col// -->
-            </div> <!-- .row // -->
-        </div> <!-- card body .// -->
-    </div> <!-- card .// -->
-</section> <!-- content-main end// -->
+                <!-- Wallet Amount -->
+                <div class="col-md-9 d-flex align-items-center justify-content-center">
+                    <article class="box text-center">
+                        <p class="mb-0 text-muted">Wallet Amount:</p>
+                        @if (Model.ApplicationUser.wallet != null && Model.ApplicationUser.wallet > 0)
+                        {
+                            <h5 class="text-success mb-0">$@Model.ApplicationUser.wallet</h5>
+                        }
+                        else
+                        {
+                            <h5 class="text-danger mb-0">Nothing in the Wallet</h5>
+                        }
+                    </article>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wallet Transaction History -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Wallet Transaction History</h5>
+            <p class="text-muted mb-0">Track your wallet credits and debits here.</p>
+        </div>
+        <div class="card-body">
+            @if (Model.WalletHistoryList != null && Model.WalletHistoryList.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var transaction in Model.WalletHistoryList)
+                            {
+                                <tr>
+                                    <td>@transaction.TransactionDate.ToString("dd-MM-yyyy HH:mm")</td>
+                                    <td>@transaction.Description</td>
+                                    <td>
+                                        <span class="badge @(transaction.TransactionType == "Credit" ? "bg-success" : "bg-info")">
+                                            @transaction.TransactionType
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="text-success">+@transaction.Amount.ToString("C")</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No transaction history found.</p>
+            }
+        </div>
+    </div>
+</section>

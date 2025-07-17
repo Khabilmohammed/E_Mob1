@@ -25,6 +25,8 @@ namespace E_mob_shoppy.DataAccess.Repository
         public IProductImageRepository ProductImage { get; private set; }
 
         public IOfferRepository Offer { get; private set; }
+        public IWalletHistoryRepository WalletHistory { get; private set; } 
+
 
         public UnitOfWork(ApplicationDbContext db) 
         {
@@ -39,6 +41,7 @@ namespace E_mob_shoppy.DataAccess.Repository
             Wishlist=new WishlistRepository(_db);
             ProductImage=new ProductImageRepository(_db);
             Offer=new OfferRepository(_db);
+            WalletHistory = new WalletHistoryRepository(_db);
         }
        
 

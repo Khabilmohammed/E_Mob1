@@ -106,8 +106,14 @@
 									<strong class="text-info">@Model.OrderHeader.OrderTotal.ToString("c")</strong>
 								</li>
 								<li class="list-group-item d-flex justify-content-between align-items-center">
-									<input id="couponInput" asp-for="OrderHeader.AppliedCouponCode" class="form-control" aria-required="true" placeholder="Coupon" />
-									<a id="applyCouponButton" class="eyebrow underline action">Check</a>
+									<select id="couponSelect" asp-for="OrderHeader.AppliedCouponCode" class="form-control">
+										<option value="">-- Select Coupon --</option>
+										@foreach (var coupon in ViewBag.EligibleCoupons)
+										{
+											<option value="@coupon.Code">@coupon.Code (@coupon.DiscountAmount?.ToString("C"))</option>
+										}
+									</select>
+									<button type="button" id="applyCouponButton" class="btn btn-outline-primary mt-2">Apply</button>
 								</li>
 								<li class="list-group-item d-flex justify-content-between align-items-center">
 									Coupon Discount
@@ -163,36 +169,32 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 	$(document).ready(function () {
-		$("#applyCouponButton").click(function () {
-			var coupon = $("#couponInput").val();
-			var orderTotal = "@Model.OrderHeader.OrderTotal";
+			$("#applyCouponButton").click(function () {
+		var coupon = $("#couponSelect").val();
+		var orderTotal = "@Model.OrderHeader.OrderTotal";
 
-			var url = "/Customer/Cart/Coupon?coupon=" + coupon + "&orderTotal=" + orderTotal;
+		var url = "/Customer/Cart/Coupon?coupon=" + coupon + "&orderTotal=" + orderTotal;
 
-			$.ajax({
-				url: url,
-				type: "GET",
-				success: function (response) {
-					// Handle the success response
-					if (response.success) {
-						var discountPrice = response.discountPrice;
-						var newTotal = response.newTotal;
+		$.ajax({
+			url: url,
+			type: "GET",
+			success: function (response) {
+				if (response.success) {
+					var discountPrice = response.discountPrice;
+					var newTotal = response.newTotal;
 
-						// Update the UI with the discounted total
-						$("#discountPrice").text(discountPrice.toFixed(2));
-						$("#newTotal").text(newTotal.toFixed(2));
-					} else {
-						// Handle the error response, such as displaying an error message
-						console.log(response.errorMessage);
-						toastr.error(response.errorMessage);
-					}
-				},
-				error: function (xhr, status, error) {
-					// Handle the error response, such as displaying an error message
-					console.log(error);
+					$("#discountPrice").text(discountPrice.toFixed(2));
+					$("#newTotal").text(newTotal.toFixed(2));
+				} else {
+					toastr.error(response.errorMessage);
 				}
-			});
+			},
+			error: function (xhr, status, error) {
+				console.log(error);
+			}
 		});
+	});
+
 	});
 </script>
 

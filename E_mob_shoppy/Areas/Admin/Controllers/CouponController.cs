@@ -2,6 +2,7 @@
 using E_mob_shoppy.DataAccess.Data;
 using E_mob_shoppy.DataAccess.Repository.IRepository;
 using E_mob_shoppy.Models;
+using E_mob_shoppy.Models.ViewModel;
 using E_mob_shoppy.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -54,6 +55,17 @@ namespace E_mob_shoppy.Areas.Admin.Controllers
                 TempData["discountError"] = "Please enter the discount amount.";
                 return View();
             }
+            if (obj.StartDateTime < DateTime.Now)
+            {
+                TempData["dateError"] = "Start date cannot be in the past.";
+                return View();
+            }
+
+            if (obj.ExpiryDateTime <= obj.StartDateTime)
+            {
+                TempData["dateError"] = "Expiry date must be later than start date.";
+                return View();
+            }
 
             if (ModelState.IsValid)
             {
@@ -85,10 +97,21 @@ namespace E_mob_shoppy.Areas.Admin.Controllers
 
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-            
-            var walletExist = _UnitOfWork.ApplicationUser.Get(u => u.Id==userId);
-            
-            return View(walletExist);
+
+            var appUser = _UnitOfWork.ApplicationUser.Get(u => u.Id == userId);
+
+            var walletHistory = _UnitOfWork.WalletHistory
+                .GetAll(u => u.ApplicationUserId == userId)
+                .OrderByDescending(w => w.TransactionDate)
+                .ToList();
+
+            var viewModel = new WalletViewModel
+            {
+                ApplicationUser = appUser,
+                WalletHistoryList = walletHistory
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -110,6 +133,18 @@ namespace E_mob_shoppy.Areas.Admin.Controllers
             if (obj.DiscountAmount == null)
             {
                 TempData["discountError"] = "Please enter the discount amount";
+                return View(obj);
+            }
+
+            if (obj.StartDateTime < DateTime.Now)
+            {
+                TempData["dateError"] = "Start date cannot be in the past.";
+                return View(obj);
+            }
+
+            if (obj.ExpiryDateTime <= obj.StartDateTime)
+            {
+                TempData["dateError"] = "Expiry date must be later than start date.";
                 return View(obj);
             }
 

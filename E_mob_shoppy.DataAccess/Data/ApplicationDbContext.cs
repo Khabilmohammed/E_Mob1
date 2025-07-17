@@ -29,7 +29,11 @@ namespace E_mob_shoppy.DataAccess.Data
         public DbSet<Wishlist> wishlists { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
 
+        public DbSet<WalletHistory> WalletHistories { get; set; }
+
         public DbSet<Offer> offers { get; set; }
+
+      
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

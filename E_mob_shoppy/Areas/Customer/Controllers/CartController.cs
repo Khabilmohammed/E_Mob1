@@ -56,9 +56,11 @@ namespace E_mob_shoppy.Areas.Customer.Controllers
 
 		public IActionResult ShowCoupon()
 		{
-            var validCoupon = _unitOfWork.Coupon.GetAll();
-            return View(validCoupon);
-		}
+            var validCoupons = _unitOfWork.Coupon.GetAll()
+        .Where(c => c.ExpiryDateTime == null || c.ExpiryDateTime > DateTime.Now);
+
+            return View(validCoupons);
+        }
 
         public IActionResult Summary()
         {
@@ -81,16 +83,25 @@ namespace E_mob_shoppy.Areas.Customer.Controllers
             shoppingCartVM.OrderHeader.City = shoppingCartVM.OrderHeader.ApplicationUser.City;
             shoppingCartVM.OrderHeader.postalCode = shoppingCartVM.OrderHeader.ApplicationUser.PostalCode;
             shoppingCartVM.OrderHeader.state = shoppingCartVM.OrderHeader.ApplicationUser.State;
-            
-            
-           
-          
-                foreach (var cart in shoppingCartVM.ShoppingCartList)
+
+            var eligibleCoupons = _unitOfWork.Coupon.GetAll()
+        .Where(c => c.StartDateTime <= DateTime.Now && c.ExpiryDateTime > DateTime.Now)
+        .ToList();
+            ViewBag.EligibleCoupons = eligibleCoupons;
+
+
+            foreach (var cart in shoppingCartVM.ShoppingCartList)
                 {
                     cart.Price = GetPriceBasedOnQuatity(cart);
                     shoppingCartVM.OrderHeader.OrderTotal += (cart.Price * cart.count);
                 }
-               
+
+            if (shoppingCartVM.OrderHeader.OrderTotal <= 0)
+            {
+                TempData["Error"] = "Your cart is empty or contains items with invalid pricing.";
+                return RedirectToAction("Index", "Cart"); // or wherever your cart page is
+            }
+
 
             return View(shoppingCartVM);
         }
@@ -361,7 +372,16 @@ namespace E_mob_shoppy.Areas.Customer.Controllers
 
 		public IActionResult Plus(int cartId)
         {
-            var cartFromDb = _unitOfWork.ShoppingCart.Get(u => u.CartId == cartId);
+            var cartFromDb = _unitOfWork.ShoppingCart.Get(
+                   u => u.CartId == cartId,
+                   includeProperties: "Product"
+               );
+
+            if (cartFromDb.count >= cartFromDb.Product.ProductQuantity)
+            {
+                TempData[$"Error_{cartId}"] = $"Only {cartFromDb.Product.ProductQuantity} items available in stock.";
+                return RedirectToAction(nameof(Index));
+            }
             cartFromDb.count += 1;
             _unitOfWork.ShoppingCart.Upadte(cartFromDb);
             _unitOfWork.Save();

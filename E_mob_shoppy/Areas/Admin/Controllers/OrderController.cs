@@ -118,6 +118,26 @@ namespace E_mob_shoppy.Areas.Admin.Controllers
                 {
                     AppUser.wallet = WalletExistingAmount + refundAmount;
                     _unitOfWork.ApplicationUser.Upadte(AppUser);
+                    var walletTransaction = new WalletHistory
+                    {
+                        ApplicationUserId = AppUser.Id,
+                        Amount = refundAmount,
+                        TransactionType = "Refund",
+                        TransactionDate = DateTime.Now,
+                        Description = "Refund for cancelled order"
+                    };
+                    _unitOfWork.WalletHistory.Add(walletTransaction);
+                    _unitOfWork.Save();
+
+                    var saved = _unitOfWork.WalletHistory.Get(u =>
+                    u.ApplicationUserId == AppUser.Id &&
+                    u.Amount == refundAmount &&
+                    u.TransactionType == "Refund");
+
+                    if (saved == null)
+                    {
+                        throw new Exception("WalletHistory not saved.");
+                    }
                 }
                 var options = new RefundCreateOptions
                 {

@@ -48,6 +48,11 @@
                         <span asp-validation-for="ExpiryDateTime" class="text-danger"></span>
                     </div>
 
+                    @if (TempData["dateError"] != null)
+                    {
+                        <div class="text-danger">@TempData["dateError"]</div>
+                    }
+
                     <div class="row">
                         <div class="col-6 col-md-3">
                             <button type="submit" class="btn btn-primary form-control">Update</button>

@@ -82,13 +82,24 @@ namespace E_mob_shoppy
                 app.MapControllerRoute(
                     name: "default",
                     pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
-                string logPath = "D:\\home\\LogFiles\\startup-log.txt";
-                System.IO.File.AppendAllText(logPath, $"App started at {DateTime.Now}\n");
+                /*string logPath = "D:\\home\\LogFiles\\startup-log.txt";
+                System.IO.File.AppendAllText(logPath, $"App started at {DateTime.Now}\n");*/
                 app.Run();
             }
             catch (Exception ex)
             {
-                System.IO.File.WriteAllText("D:\\home\\site\\wwwroot\\startup-error.txt", ex.ToString());
+                string errorFilePath;
+
+                if (Directory.Exists("D:\\home\\site\\wwwroot"))
+                {
+                    errorFilePath = "D:\\home\\site\\wwwroot\\startup-error.txt"; // Azure path
+                }
+                else
+                {
+                    errorFilePath = "startup-error.txt"; // Local fallback
+                }
+
+                System.IO.File.WriteAllText(errorFilePath, ex.ToString());
                 throw;
             }
         }

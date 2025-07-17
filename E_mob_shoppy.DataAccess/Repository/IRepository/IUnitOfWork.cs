@@ -19,9 +19,9 @@ namespace E_mob_shoppy.DataAccess.Repository.IRepository
         IWishlistRepository Wishlist { get; }
         IProductImageRepository ProductImage { get; }
        
-        IOfferRepository Offer { get; } 
+        IOfferRepository Offer { get; }
 
-
+        IWalletHistoryRepository WalletHistory { get; }
 
         void Save();
     }
