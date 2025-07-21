@@ -117,7 +117,7 @@ namespace E_mob_shoppy
                 try
                 {
                     dbInitializer.Initialize();
-                    break; // success
+                    break; 
                 }
                 catch (Exception ex)
                 {
